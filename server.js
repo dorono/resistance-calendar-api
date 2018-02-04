@@ -11,21 +11,16 @@ const server = new Hapi.Server({
     engine: require('catbox-memory')
   }]
 });
+
 server.connection({
   port: process.env.PORT || 8000
 });
 
-// Add the route
-server.route({
-  method: 'GET',
-  path: '/',
-  handler: function (request, reply) {
-    return reply('hello world');
-  }
-});
-
 // Register the additional plugins
 const plugins = [{
+  register: require('hapi-prerender'),
+},
+{
   register: require('./routes')
 }];
 
@@ -39,4 +34,13 @@ server.register(plugins, function () {
     server.ext('onPreResponse', corsHeaders);
     console.log('Server running at:', server.info.uri);
   });
+});
+
+// Add the route
+server.route({
+  method: 'GET',
+  path: '/',
+  handler: function (request, reply) {
+    return reply('hello world');
+  }
 });
